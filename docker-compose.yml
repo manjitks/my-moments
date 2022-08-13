@@ -26,9 +26,9 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - /home/amr/instaMongo:/data/db
+      - /Users/aregon/learn/my-moments/instaMongo:/data/db
   neo4j:
-    image: neo4j:latest
+    image: bitnami/neo4j:3.5.3-r20
     ports:
      - "7474:7474"
      - "7687:7687"
@@ -38,4 +38,4 @@ services:
       - "7000:7000"
       - "9042:9042"
     volumes:
-      - /home/amr/instaCassandra:/var/lib/cassandra
+      - /Users/aregon/learn/my-moments/instaCassandra:/var/lib/cassandra

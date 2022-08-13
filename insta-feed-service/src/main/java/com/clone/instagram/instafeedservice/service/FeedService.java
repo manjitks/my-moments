@@ -28,7 +28,7 @@ public class FeedService {
 
     public SlicedResult<Post> getUserFeed(String username, Optional<String> pagingState) {
 
-        log.info("getting feed for user {} isFirstPage {}", username, pagingState.isEmpty());
+        log.info("getting feed for user {} isFirstPage {}", username, "gettt");
 
         CassandraPageRequest request = pagingState
                 .map(pState -> CassandraPageRequest

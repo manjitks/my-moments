@@ -54,11 +54,11 @@ public class AuthService {
             log.error(message);
             throw new UnableToGetUsersException(message);
         }
-
+//todo correct   UserSummary::getProfilePicture));
        return response
                 .getBody()
                 .stream()
                 .collect(toMap(UserSummary::getUsername,
-                        UserSummary::getProfilePicture));
+                        UserSummary::getUsername));
     }
 }

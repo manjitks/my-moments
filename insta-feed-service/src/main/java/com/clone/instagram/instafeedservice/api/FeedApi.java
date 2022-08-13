@@ -24,7 +24,7 @@ public class FeedApi {
             @RequestParam(value = "ps",required = false) Optional<String> pagingState) {
 
         log.info("fetching feed for user {} isFirstPage {}",
-                username, pagingState.isEmpty());
+                username, "tes");
 
         return ResponseEntity.ok(feedService.getUserFeed(username, pagingState));
     }
