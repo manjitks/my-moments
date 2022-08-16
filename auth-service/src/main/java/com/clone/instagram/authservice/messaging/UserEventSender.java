@@ -3,6 +3,7 @@ package com.clone.instagram.authservice.messaging;
 import com.clone.instagram.authservice.model.User;
 import com.clone.instagram.authservice.payload.UserEventPayload;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -14,6 +15,10 @@ import org.springframework.stereotype.Service;
 public class UserEventSender {
 
     private UserEventStream channels;
+
+    @Autowired
+    private Test test;
+
 
     public UserEventSender(UserEventStream channels) {
         this.channels = channels;
@@ -41,13 +46,20 @@ public class UserEventSender {
 
     private void sendUserChangedEvent(UserEventPayload payload) {
 
+        Message<String> message1 =
+                MessageBuilder
+                        .withPayload("payload")
+                        .setHeader(KafkaHeaders.MESSAGE_KEY, payload.getUsername())
+                        .build();
+
         Message<UserEventPayload> message =
                 MessageBuilder
                         .withPayload(payload)
-                        .setHeader(KafkaHeaders.MESSAGE_KEY, payload.getId())
+                        .setHeader(KafkaHeaders.MESSAGE_KEY, payload.getUsername())
                         .build();
-
+       // test.test().send(message1);
         channels.momentsUserChanged().send(message);
+
 
         log.info("user event {} sent to topic {} for user {}",
                 message.getPayload().getEventType().name(),

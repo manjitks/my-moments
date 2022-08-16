@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -54,17 +55,18 @@ public class UserService {
                     String.format("username %s already exists", user.getUsername()));
         }
 
-        if(userRepository.existsByEmail(user.getEmail())) {
-            log.warn("email {} already exists.", user.getEmail());
-
-            throw new EmailAlreadyExistsException(
-                    String.format("email %s already exists", user.getEmail()));
-        }
+//        if(userRepository.existsByEmail(user.getEmail())) {
+//            log.warn("email {} already exists.", user.getEmail());
+//
+//            throw new EmailAlreadyExistsException(
+//                    String.format("email %s already exists", user.getEmail()));
+//        }
         user.setActive(true);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(new HashSet<>() {{
             add(Role.USER);
         }});
+        user.setId(UUID.randomUUID());
 
         User savedUser = userRepository.save(user);
         userEventSender.sendUserCreated(savedUser);
@@ -72,7 +74,7 @@ public class UserService {
         return savedUser;
     }
 
-    public User updateProfilePicture(String uri, String id) {
+    public User updateProfilePicture(String uri, UUID id) {
         log.info("update profile picture {} for user {}", uri, id);
 
        return userRepository

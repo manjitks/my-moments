@@ -52,8 +52,10 @@ public class UserEndpoint {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = tokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+        var jwt = tokenProvider.generateToken(authentication);
+        var user = userService.findByUsername(loginRequest.getUsername()).get();
+        user.setPassword("");
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt, user));
     }
 
     @PostMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)

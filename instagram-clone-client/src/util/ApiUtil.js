@@ -1,4 +1,4 @@
-import { API_BASE_URL, ACCESS_TOKEN } from "../common/constants";
+import { API_BASE_URL, ACCESS_TOKEN } from "../component/common/constants";
 
 const request = options => {
   const headers = new Headers();
@@ -27,7 +27,8 @@ const request = options => {
   );
 };
 
-export function login(loginRequest) {
+export const login = (loginRequest)=> {
+  console.log("dhhhd")
   return request({
     url: API_BASE_URL + "/auth/signin",
     method: "POST",
@@ -45,6 +46,7 @@ export function signup(signupRequest) {
 
 export function getCurrentUser() {
   if (!localStorage.getItem(ACCESS_TOKEN)) {
+    console.log("hereeManj")
     return Promise.reject("No access token set.");
   }
 
@@ -136,24 +138,27 @@ export function getUserPosts(username) {
 }
 
 export function follow(followRequest) {
+  
   if (!localStorage.getItem(ACCESS_TOKEN)) {
     return Promise.reject("No access token set.");
   }
 
+
+  console.log(followRequest);
+
   return request({
-    url: API_BASE_URL + "/graph/users/followers",
-    method: "POST",
-    body: JSON.stringify(followRequest)
+    url: API_BASE_URL + "/graph/associations/"+followRequest.follower.id+"/"+followRequest.following.id+"/test",
+    method: "GET"
   });
 }
 
-export function getfollowersAndFollowing(username) {
+export function getfollowersAndFollowing(id) {
   if (!localStorage.getItem(ACCESS_TOKEN)) {
     return Promise.reject("No access token set.");
   }
 
   return request({
-    url: API_BASE_URL + "/graph/users/" + username + "/degree",
+    url: API_BASE_URL + "/graph/associations/"+id+"/degree",
     method: "GET"
   });
 }

@@ -11,7 +11,7 @@ import {
   Row,
   Col
 } from "antd";
-import { uploadImage, createPost } from "../../util/ApiUtil";
+import { uploadImage, createPost } from "../../../util/ApiUtil";
 
 const Dragger = Upload.Dragger;
 const { TextArea } = Input;

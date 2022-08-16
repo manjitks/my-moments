@@ -1,5 +1,9 @@
 export const API_BASE_URL = "http://localhost:8762";
 export const ACCESS_TOKEN = "accessToken";
+export const USER_ID = "userId";
+export const IS_AUTHENTICTED = "isAuthenticated";
+
+
 
 export const NAME_MIN_LENGTH = 3;
 export const NAME_MAX_LENGTH = 40;

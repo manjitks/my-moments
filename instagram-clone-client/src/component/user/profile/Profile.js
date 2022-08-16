@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./meprofile.css";
+import "./profile.css";
 import {
   Row,
   Col,
@@ -9,33 +9,37 @@ import {
   Button,
   List,
   Empty,
-  notification,
-  Spin
+  notification
 } from "antd";
-import ProfileModal from "./ProfileModal";
-import FollowModal from "./FollowModal";
+import LoadingIndicator from "../../common/LoadingIndicator";
 import {
-  uploadImage,
-  updateProfilePicture,
+  getUserProfile,
+  getUserPosts,
   getfollowersAndFollowing,
+  follow,
+  isFollowing,
   getfollowers,
   getfollowing
-} from "../../util/ApiUtil";
+} from "../../../util/ApiUtil";
 import PostGrid from "../../post/postgrid/PostGrid";
+import FollowModal from "./FollowModal";
 import { ACCESS_TOKEN } from "../../common/constants";
 
 const TabPane = Tabs.TabPane;
 
-class MeProfile extends Component {
+class Profile extends Component {
   state = {
-    settingModalVisible: false,
-    profilePicModalVisible: false,
-    profilePicUploading: false,
-    followersModalVisible: false,
-    followingModalVisible: false,
+    isLoading: false,
     followers: 0,
     following: 0,
-    currentUser: { ...this.props.currentUser }
+    followersModalVisible: false,
+    followingModalVisible: false,
+    currentUser: {},
+    loggedInUser: this.props.currentUser,
+    posts: [],
+    followLoading: false,
+    isFollowing: false,
+    followText: "Follow"
   };
 
   componentDidMount = () => {
@@ -43,7 +47,50 @@ class MeProfile extends Component {
       this.props.history.push("/login");
     }
 
-    this.getfollowersAndFollowing(this.state.currentUser.username);
+    const username = this.props.match.params.username;
+    console.log("componentDidMount")
+    console.log(this.props)
+    this.loadUserProfile(username);
+    if(this.props.currentUser)
+    this.getfollowersAndFollowing(this.props.currentUser.id);
+    
+    if (this.props.currentUser !== null) {
+      this.isFollowing(this.props.currentUser.username, username);
+    }
+  };
+
+  componentDidUpdate = prevProps => {
+    if (this.props.match.params.username !== prevProps.match.params.username) {
+      this.handleFollowersCancel();
+      this.handleFollowingCancel();
+      console.log(this.props.match.params.username)
+      const username = this.props.match.params.username;
+      console.log(this.props)
+      this.loadUserProfile(username);
+      this.getfollowersAndFollowing(this.props.match.params.id);
+
+      this.isFollowing(this.props.currentUser.username, username);
+    }
+  };
+
+  loadUserProfile = username => {
+    console.log("inside load profile");
+    this.setState({ isLoading: true });
+
+    getUserProfile(username)
+      .then(response => {
+        this.setState({ currentUser: response, isLoading: false });
+      })
+      .catch(error => {
+        this.setState({ isLoading: false });
+
+        if (error.status === 404) {
+          notification.error({
+            message: "MyMoments",
+            description: "user not found"
+          });
+        }
+      });
   };
 
   getfollowersAndFollowing = username => {
@@ -55,68 +102,40 @@ class MeProfile extends Component {
     );
   };
 
-  showSettingModal = () => {
-    this.setState({ settingModalVisible: true });
-  };
-
-  hideSettingModal = () => {
-    this.setState({ settingModalVisible: false });
-  };
-
-  handleLogout = () => {
-    this.setState({ settingModalVisible: false });
-    this.props.onLogout();
-  };
-
-  showProfilePicModal = () => {
-    this.setState({ profilePicModalVisible: true });
-  };
-
-  hideProfilePicModal = () => {
-    this.setState({ profilePicModalVisible: false });
-  };
-
-  handleUpload = file => {
-    this.setState({ profilePicUploading: true });
-    this.hideProfilePicModal();
-
-    const data = new FormData();
-    data.append("image", file);
-
-    uploadImage(data)
-      .then(response => {
-        updateProfilePicture(response.uri)
-          .then(res => {
-            let currentUser = { ...this.state.currentUser };
-            currentUser.profilePicture = response.uri;
-
-            this.setState({
-              currentUser: { ...currentUser }
-            });
-
-            this.props.onUpdateCurrentUser(currentUser);
-
-            notification.success({
-              message: "MyMoments",
-              description: "Profile picture updated"
-            });
-          })
-          .catch(error => {
-            notification.error({
-              message: "MyMoments",
-              description: "Something went wrong. Please try again!"
-            });
-          });
-      })
-      .catch(error => {
-        notification.error({
-          message: "MyMoments",
-          description:
-            error.message || "Something went wrong. Please try again!"
+  isFollowing = (usernameA, usernameB) => {
+    isFollowing(usernameA, usernameB).then(response => {
+      if (response) {
+        this.setState({ isFollowing: true });
+      } else {
+        isFollowing(usernameB, usernameA).then(res => {
+          if (res) {
+            this.setState({ isFollowing: false, followText: "Follow Back" });
+          } else {
+            this.setState({ isFollowing: false, followText: "Follow" });
+          }
         });
-      });
+      }
+    });
+  };
 
-    this.setState({ profilePicUploading: false });
+  handleGetUserPosts = () => {
+    const username = this.props.match.params.username;
+    getUserPosts(username).then(response => this.setState({ posts: response }));
+  };
+
+  handleFollow = () => {
+    this.setState({ followLoading: true });
+
+    const followRequest = {
+      follower: this.props.currentUser,
+      following: this.state.currentUser
+    };
+
+    follow(followRequest).then(response => {
+      console.log(this.state.currentUser)
+      this.setState({ followLoading: false, isFollowing: true });
+      this.getfollowersAndFollowing(this.state.currentUser.id);
+    });
   };
 
   handleFollowersClick = () => {
@@ -148,10 +167,35 @@ class MeProfile extends Component {
   };
 
   render() {
+    if (this.state.isLoading) {
+      return <LoadingIndicator />;
+    }
+
     let numOfPosts = 0;
 
-    if (Array.isArray(this.props.posts)) {
-      numOfPosts = this.props.posts.length;
+    if (Array.isArray(this.state.posts)) {
+      numOfPosts = this.state.posts.length;
+    }
+
+    let followBtn;
+
+    if (!this.state.isFollowing) {
+      followBtn = (
+        <Button
+          type="primary"
+          className="follow-btn"
+          loading={this.state.followLoading}
+          onClick={this.handleFollow}
+        >
+          {this.state.followText}
+        </Button>
+      );
+    } else {
+      followBtn = (
+        <Button type="secondary" className="follow-btn">
+          Following
+        </Button>
+      );
     }
 
     return (
@@ -162,16 +206,10 @@ class MeProfile extends Component {
               <Row>
                 <Col span={8}>
                   <div className="user-avatar">
-                    <Spin
-                      spinning={this.state.profilePicUploading}
-                      tip="Uploading..."
-                    >
-                      <Avatar
-                        src={this.state.currentUser.profilePicture}
-                        className="user-avatar-circle"
-                        onClick={this.showProfilePicModal}
-                      />
-                    </Spin>
+                    <Avatar
+                      src={this.state.currentUser.profilePicture}
+                      className="user-avatar-circle"
+                    />
                   </div>
                 </Col>
                 <Col span={16}>
@@ -181,16 +219,7 @@ class MeProfile extends Component {
                         {this.state.currentUser.username}
                       </h1>
                     </Col>
-                    <Col span={4}>
-                      <Button className="edit-profile">Edit profile</Button>
-                    </Col>
-                    <Col span={11}>
-                      <Icon
-                        className="setting"
-                        type="setting"
-                        onClick={this.showSettingModal}
-                      />
-                    </Col>
+                    <Col span={4}>{followBtn}</Col>
                   </Row>
                   <Row>
                     <Col span={15}>
@@ -281,26 +310,8 @@ class MeProfile extends Component {
                 key="1"
               >
                 <PostGrid
-                  onGetUserPosts={this.props.onGetUserPosts}
-                  posts={this.props.posts}
-                />
-              </TabPane>
-              <TabPane
-                tab={
-                  <span>
-                    <Icon type="save" />
-                    SAVED
-                  </span>
-                }
-                key="2"
-              >
-                <Empty
-                  image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
-                  description={
-                    <span>
-                      Save photos and videos that you want to see again
-                    </span>
-                  }
+                  onGetUserPosts={this.handleGetUserPosts}
+                  posts={this.state.posts}
                 />
               </TabPane>
               <TabPane
@@ -314,42 +325,12 @@ class MeProfile extends Component {
               >
                 <Empty
                   image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
-                  description={
-                    <span>
-                      When people tag you in photos, they'll appear here.
-                    </span>
-                  }
+                  description={<span>No Posts Yet</span>}
                 />
               </TabPane>
             </Tabs>
           </Col>
         </Row>
-        <ProfileModal
-          visible={this.state.settingModalVisible}
-          title={null}
-          dataSource={[
-            { onClick: null, text: "Change password" },
-            { onClick: null, text: "Nametag" },
-            { onClick: null, text: "Authorized App" },
-            { onClick: null, text: "Notifications" },
-            { onClick: null, text: "Privacy and Security" },
-            { onClick: this.handleLogout, text: "Logout" },
-            { onClick: this.hideSettingModal, text: "Cancel" }
-          ]}
-        />
-        <ProfileModal
-          visible={this.state.profilePicModalVisible}
-          title="Change profile photo"
-          dataSource={[
-            {
-              onClick: null,
-              text: "Upload Photo",
-              isUpload: true,
-              onUpload: this.handleUpload
-            },
-            { onClick: this.hideProfilePicModal, text: "Cancel" }
-          ]}
-        />
         <FollowModal
           visible={this.state.followersModalVisible}
           title="Followers"
@@ -369,4 +350,4 @@ class MeProfile extends Component {
   }
 }
 
-export default MeProfile;
+export default Profile;

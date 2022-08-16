@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Slider from "react-slick";
 import "./discover.css";
 import { Card, Avatar, Button } from "antd";
-import { getAllUsers } from "../../util/ApiUtil";
+import { getAllUsers } from "../../../util/ApiUtil";
 import { ACCESS_TOKEN } from "../../common/constants";
 import LoadingIndicator from "../../common/LoadingIndicator";
 

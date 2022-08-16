@@ -14,6 +14,9 @@ class NewsFeed extends Component {
   };
 
   render() {
+    if (!this.props.isAuthenticated) {
+      this.props.history.push("/login");
+    }
     return (
       <div className="feed-container">
         <Row>

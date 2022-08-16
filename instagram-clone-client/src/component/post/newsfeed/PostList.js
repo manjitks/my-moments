@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Avatar, Card, Icon, Input, List } from "antd";
 import InfiniteScroll from "react-infinite-scroller";
-import { getFeed } from "../../util/ApiUtil";
+import { getFeed } from "../../../util/ApiUtil";
 import LoadingIndicator from "../../common/LoadingIndicator";
 import "./postlist.css";
 

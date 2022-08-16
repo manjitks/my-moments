@@ -16,6 +16,7 @@ import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Data
@@ -46,7 +47,7 @@ public class User {
     }
 
     @Id
-    private String id;
+    private UUID id;
 
     @NotBlank
     @Size(max = 15)
@@ -57,10 +58,10 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @NotBlank
+
     @Size(max = 40)
     @Email
-    private String email;
+    private String email="test";
 
     @CreatedDate
     private Instant createdAt;

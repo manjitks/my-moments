@@ -16,11 +16,6 @@ spring:
           configuration:
             key:
               deserializer: org.apache.kafka.common.serialization.StringDeserializer
-        bindings:
-          momentsUserChanged:
-            consumer:
-              startOffset: latest
-              autoCommitOffset: false
       bindings:
         momentsUserChanged:
           destination: moments.user.changed
@@ -31,7 +26,7 @@ spring:
             autoCommitOffset: false
 
 server:
-  port: 8002
+  port: 6001
 
 eureka:
   client:

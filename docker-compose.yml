@@ -28,7 +28,7 @@ services:
     volumes:
       - /Users/aregon/learn/my-moments/instaMongo:/data/db
   neo4j:
-    image: bitnami/neo4j:3.5.3-r20
+    image: neo4j:latest
     ports:
      - "7474:7474"
      - "7687:7687"

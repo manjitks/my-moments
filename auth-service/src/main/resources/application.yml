@@ -18,6 +18,9 @@ spring:
         momentsUserChanged:
           destination: moments.user.changed
           contentType: application/json
+        test:
+          destination: test
+          contentType: application/json
 server:
   port: 9000
 

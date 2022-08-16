@@ -11,7 +11,7 @@ import {
   PASSWORD_MIN_LENGTH,
   PASSWORD_MAX_LENGTH
 } from "../../common/constants";
-import { signup } from "../../util/ApiUtil";
+import { signup } from "../../../util/ApiUtil";
 
 const FormItem = Form.Item;
 
@@ -81,7 +81,7 @@ class Signup extends Component {
     return !(
       this.state.name.validateStatus === "success" &&
       this.state.username.validateStatus === "success" &&
-      this.state.email.validateStatus === "success" &&
+   //   this.state.email.validateStatus === "success" &&
       this.state.password.validateStatus === "success"
     );
   }
@@ -118,7 +118,7 @@ class Signup extends Component {
                   help={this.state.email.errorMsg}
                   hasFeedback
                 >
-                  <Input
+                  {/* <Input
                     size="large"
                     name="email"
                     placeholder="Email"
@@ -126,7 +126,7 @@ class Signup extends Component {
                     onChange={event =>
                       this.handleInputChange(event, this.validateEmail)
                     }
-                  />
+                  /> */}
                 </FormItem>
                 <FormItem
                   validateStatus={this.state.username.validateStatus}
