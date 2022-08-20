@@ -1,4 +1,5 @@
-import { API_BASE_URL, ACCESS_TOKEN } from "../component/common/constants";
+import { LocaleProvider } from "antd";
+import { API_BASE_URL, ACCESS_TOKEN, USER, IS_AUTHENTICTED, USER_ID } from "../component/common/constants";
 
 const request = options => {
   const headers = new Headers();
@@ -19,11 +20,18 @@ const request = options => {
 
   return fetch(options.url, options).then(response =>
     response.json().then(json => {
+      console.log(response)
+      if(response.status == 401){
+        localStorage.removeItem(ACCESS_TOKEN);
+        localStorage.removeItem(USER)
+        localStorage.removeItem(IS_AUTHENTICTED)
+        //localStorage.removeItem("persist:root")
+      }
       if (!response.ok) {
         return Promise.reject(json);
       }
       return json;
-    })
+    }).catch(()=>console.log("error while Fetching"))
   );
 };
 
@@ -169,29 +177,29 @@ export function isFollowing(usernameA, usernameB) {
   }
 
   return request({
-    url: API_BASE_URL + "/graph/users/" + usernameA + "/following/" + usernameB,
+    url: API_BASE_URL + "/graph/associations/" + usernameA +"/"+ usernameB+"?type=FOLLOW",
     method: "GET"
   });
 }
 
-export function getfollowers(username) {
+export function getfollowers(user_id) {
   if (!localStorage.getItem(ACCESS_TOKEN)) {
     return Promise.reject("No access token set.");
   }
 
   return request({
-    url: API_BASE_URL + "/graph/users/" + username + "/followers",
+    url: API_BASE_URL + "/graph/objects/" + user_id + "/adjacents?type=USER&associationType=FOLLOWER",
     method: "GET"
   });
 }
 
-export function getfollowing(username) {
+export function getfollowing(user_id) {
   if (!localStorage.getItem(ACCESS_TOKEN)) {
     return Promise.reject("No access token set.");
   }
 
   return request({
-    url: API_BASE_URL + "/graph/users/" + username + "/following",
+    url: API_BASE_URL + "/graph/objects/" + user_id + "/adjacents?type=USER&associationType=FOLLOW",
     method: "GET"
   });
 }

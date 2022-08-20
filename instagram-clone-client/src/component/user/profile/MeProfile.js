@@ -126,7 +126,7 @@ class MeProfile extends Component {
 
   handleFollowersClick = () => {
     if (this.state.followers > 0) {
-      getfollowers(this.state.currentUser.username).then(response =>
+      getfollowers(this.state.currentUser.id).then(response =>
         this.setState({ followerList: response, followersModalVisible: true })
       );
     }
@@ -134,7 +134,7 @@ class MeProfile extends Component {
 
   handleFollowingClick = () => {
     if (this.state.following > 0) {
-      getfollowing(this.state.currentUser.username).then(response =>
+      getfollowing(this.state.currentUser.id).then(response =>
         this.setState({ followingList: response, followingModalVisible: true })
       );
     }
@@ -148,8 +148,9 @@ class MeProfile extends Component {
     this.setState({ followingModalVisible: false, followingList: [] });
   };
 
-  handleOnItemClick = username => {
-    this.props.history.push("/users/" + username);
+  handleOnItemClick = item => {
+    //this.props.history.push("/users/" + selectedUser.username,{selectedUser:selectedUser});
+    this.props.history.push("/users/" + item.data.username,{selectedUser:{username:item.data.username,id:item.id}});
   };
 
   render() {

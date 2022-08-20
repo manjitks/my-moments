@@ -5,12 +5,12 @@ import { ACCESS_TOKEN } from "../../common/constants";
 import PostList from "./PostList";
 
 class NewsFeed extends Component {
-  state = { currentUser: { ...this.props.currentUser } };
+  state = {
+     currentUser: { ...this.props.currentUser } 
+    };
 
   componentDidMount = () => {
-    if (!localStorage.getItem(ACCESS_TOKEN)) {
-      this.props.history.push("/login");
-    }
+
   };
 
   render() {
@@ -21,7 +21,7 @@ class NewsFeed extends Component {
       <div className="feed-container">
         <Row>
           <Col span={16}>
-            <PostList currentUser={this.state.currentUser} />
+            <PostList currentUser={this.props.currentUser} />
           </Col>
           <Col className="feed-user-detail-col" span={8}>
             <Row>

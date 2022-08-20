@@ -47,15 +47,17 @@ class Profile extends Component {
       this.props.history.push("/login");
     }
 
-    const username = this.props.match.params.username;
+    //const username = this.props.match.params.username;
+    const selectedUser = this.props.location.state.selectedUser;
+    console.log(this.props.location.state)
+
     console.log("componentDidMount")
-    console.log(this.props)
-    this.loadUserProfile(username);
+    this.loadUserProfile(selectedUser.username);
     if(this.props.currentUser)
-    this.getfollowersAndFollowing(this.props.currentUser.id);
+    this.getfollowersAndFollowing(selectedUser.id);
     
     if (this.props.currentUser !== null) {
-      this.isFollowing(this.props.currentUser.username, username);
+      this.isFollowing(this.props.currentUser.id, selectedUser.id);
     }
   };
 
@@ -67,7 +69,7 @@ class Profile extends Component {
       const username = this.props.match.params.username;
       console.log(this.props)
       this.loadUserProfile(username);
-      this.getfollowersAndFollowing(this.props.match.params.id);
+      this.getfollowersAndFollowing(this.props.location.state.selectedUser.id);
 
       this.isFollowing(this.props.currentUser.username, username);
     }
@@ -105,10 +107,12 @@ class Profile extends Component {
   isFollowing = (usernameA, usernameB) => {
     isFollowing(usernameA, usernameB).then(response => {
       if (response) {
+        console.log("truee")
         this.setState({ isFollowing: true });
       } else {
         isFollowing(usernameB, usernameA).then(res => {
           if (res) {
+            console.log("true else")
             this.setState({ isFollowing: false, followText: "Follow Back" });
           } else {
             this.setState({ isFollowing: false, followText: "Follow" });
@@ -124,6 +128,8 @@ class Profile extends Component {
   };
 
   handleFollow = () => {
+    console.log("follow clicked")
+
     this.setState({ followLoading: true });
 
     const followRequest = {
@@ -134,13 +140,15 @@ class Profile extends Component {
     follow(followRequest).then(response => {
       console.log(this.state.currentUser)
       this.setState({ followLoading: false, isFollowing: true });
-      this.getfollowersAndFollowing(this.state.currentUser.id);
+      this.getfollowersAndFollowing(this.props.location.state.selectedUser);
     });
   };
 
   handleFollowersClick = () => {
+    console.log("follow clicked")
+
     if (this.state.followers > 0) {
-      getfollowers(this.state.currentUser.username).then(response =>
+      getfollowers(this.props.location.state.selectedUser.id).then(response =>
         this.setState({ followerList: response, followersModalVisible: true })
       );
     }
@@ -148,7 +156,7 @@ class Profile extends Component {
 
   handleFollowingClick = () => {
     if (this.state.following > 0) {
-      getfollowing(this.state.currentUser.username).then(response =>
+      getfollowing(this.props.location.state.selectedUser.id).then(response =>
         this.setState({ followingList: response, followingModalVisible: true })
       );
     }
@@ -162,8 +170,8 @@ class Profile extends Component {
     this.setState({ followingModalVisible: false, followingList: [] });
   };
 
-  handleOnItemClick = username => {
-    this.props.history.push("/users/" + username);
+  handleOnItemClick = item => {
+    this.props.history.push("/users/" + item.data.username,{selectedUser:{username:item.data.username,id:item.id}});
   };
 
   render() {

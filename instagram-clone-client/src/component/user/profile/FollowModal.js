@@ -6,16 +6,17 @@ class FollowModal extends Component {
   state = {};
 
   getItemRender = item => {
+    console.log(item)
     const listItem = (
       <List.Item
         centered
         className="follow-modal-item"
-        onClick={() => this.props.onItemClick(item.username)}
+        onClick={() => this.props.onItemClick(item)}
       >
         <List.Item.Meta
           avatar={<Avatar src={item.profilePic} />}
-          title={item.name}
-          description={item.username}
+          title={item.data.username}
+          //description={item.data.username}
         />
       </List.Item>
     );

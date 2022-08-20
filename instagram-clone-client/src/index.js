@@ -10,7 +10,7 @@ import {store,persistor} from './store/store';
 import "./index.css";
 import App from "./app/App";
 //import Test from './TestMock'
-import './MockServer/server';
+//import './MockServer/server';
 
 
 ReactDOM.render(

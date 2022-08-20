@@ -1,5 +1,6 @@
 export const API_BASE_URL = "http://localhost:8762";
 export const ACCESS_TOKEN = "accessToken";
+export const USER = "user"
 export const USER_ID = "userId";
 export const IS_AUTHENTICTED = "isAuthenticated";
 

@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { Route, withRouter, Switch } from "react-router-dom";
 import { Layout, Affix } from "antd";
-import { connect, useDispatch } from 'react-redux';
-
+import { connect, useDispatch } from "react-redux";
 
 import "./App.css";
 import LoadingIndicator from "../component/common/LoadingIndicator";
@@ -22,47 +21,47 @@ const { Header, Content } = Layout;
 class App extends Component {
   state = {
     isAuthenticated: false,
-    isLoading: false
+    isLoading: false,
   };
 
   componentDidMount = () => {
-    console.log("manjit")
+    console.log("manjit");
     //this.loadCurrentUser();
   };
 
-
-  handleUpdateCurrentuser = currentuser => {
+  handleUpdateCurrentuser = (currentuser) => {
     this.setState({ currentUser: { ...currentuser } });
   };
 
   handleLogout = (redirectTo = "/login") => {
-    console.log("lo re")
+    console.log("lo re");
     localStorage.removeItem(ACCESS_TOKEN);
 
     this.setState({
       currentUser: null,
-      isAuthenticated: false
+      isAuthenticated: false,
     });
     this.props.history.push(redirectTo);
   };
 
   logout = () => {
-    console.log("logg")
+    console.log("logg");
     localStorage.removeItem(ACCESS_TOKEN);
 
     this.setState({
       currentUser: null,
-      isAuthenticated: false
+      isAuthenticated: false,
     });
   };
 
-
   handleGetUserPosts = () => {
-    getCurrentUserPosts().then(response => this.setState({ posts: response }));
+    getCurrentUserPosts().then((response) =>
+      this.setState({ posts: response })
+    );
   };
 
   render() {
-    console.log("manjit")
+    console.log("manjit");
     //this.loadCurrentUser();
 
     if (this.state.isLoading) {
@@ -95,7 +94,7 @@ class App extends Component {
               <Route
                 exact
                 path="/"
-                render={props => (
+                render={(props) => (
                   <NewsFeed
                     isAuthenticated={this.props.isAuthenticated}
                     currentUser={this.props.currentUser}
@@ -106,7 +105,7 @@ class App extends Component {
               <Route
                 exact
                 path="/login"
-                render={props => (
+                render={(props) => (
                   <Login
                     isAuthenticated={this.props.isAuthenticated}
                     currentUser={this.props.currentUser}
@@ -117,7 +116,7 @@ class App extends Component {
               <Route
                 exact
                 path="/signup"
-                render={props => (
+                render={(props) => (
                   <Signup
                     isAuthenticated={this.props.isAuthenticated}
                     currentUser={this.props.currentUser}
@@ -128,7 +127,7 @@ class App extends Component {
               <Route
                 exact
                 path="/users/me"
-                render={props => (
+                render={(props) => (
                   <MeProfile
                     isAuthenticated={this.props.isAuthenticated}
                     currentUser={this.props.currentUser}
@@ -142,7 +141,7 @@ class App extends Component {
               />
               <Route
                 path="/users/:username"
-                render={props => (
+                render={(props) => (
                   <Profile
                     isAuthenticated={this.props.isAuthenticated}
                     currentUser={this.props.currentUser}
@@ -153,7 +152,7 @@ class App extends Component {
               <Route
                 exact
                 path="/discover"
-                render={props => (
+                render={(props) => (
                   <Discover
                     isAuthenticated={this.props.isAuthenticated}
                     currentUser={this.props.currentUser}
@@ -169,26 +168,21 @@ class App extends Component {
   }
 }
 
-
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     currentUser: state.auth.currentUser,
-    isAuthenticated:state.auth.isAuthenticated
+    isAuthenticated: state.auth.isAuthenticated,
     //anotherProp: state.anotherProp
   };
 };
 
-
-
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   //handleSubmittest: res=> dispatch(handleSubmitRed(res))
 });
 
-
-const withRouterApp= withRouter(App);
+const withRouterApp = withRouter(App);
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(withRouterApp);
-
